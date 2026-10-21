@@ -73,7 +73,7 @@ function App() {
             <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-3">
               <h3 class="font-bold text-white text-base">📖 بوابة الطلاب</h3>
               <form onSubmit={e => { e.preventDefault(); const f = stus.find(s => s.id.toUpperCase() === sCode.trim().toUpperCase()); if(f) { setCurStu(f); setGrade(f.grade); setView('s-app'); setSErr(''); } else setSErr('الكود غير صحيح!'); }} class="space-y-3">
-                <input type="text" value={sCode} onChange={e => setSCode(e.target.value)} placeholder="أدخل كود الطالب (مثال: STU-101)" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white"/>
+                <input type="text" value={sCode} onChange={e => setSCode(e.target.value)} placeholder="أدخل كود الطالب" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white"/>
                 {sErr && <p class="text-red-400 text-xs text-center font-bold">{sErr}</p>}
                 <div class="grid grid-cols-2 gap-2">
                   <button type="submit" class="bg-indigo-600 py-3 rounded-xl text-xs font-bold">دخول برقم الطالب</button>
