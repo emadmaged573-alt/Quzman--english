@@ -132,4 +132,289 @@
         ]);
 
         // حفظ البيانات في LocalStorage
-        useEffect(() =>
+        useEffect(() => { localStorage.setItem('eq_students', JSON.stringify(students)); }, [students]);
+        useEffect(() => { localStorage.setItem('eq_lessons', JSON.stringify(lessons)); }, [lessons]);
+        useEffect(() => { localStorage.setItem('eq_quizzes', JSON.stringify(quizzes)); }, [quizzes]);
+        useEffect(() => { localStorage.setItem('eq_results', JSON.stringify(quizResults)); }, [quizResults]);
+
+        // تسجيل دخول المعلم
+        const handleTeacherAuth = (e) => {
+          e.preventDefault();
+          if (teacherPass === 'quzman5656') {
+            setIsTeacher(true);
+            setView('teacher-dashboard');
+            setTeacherError('');
+          } else {
+            setTeacherError('كلمة المرور غير صحيحة!');
+          }
+        };
+
+        // تسجيل دخول الطالب
+        const handleStudentAuth = (e) => {
+          e.preventDefault();
+          const found = students.find(s => s.id.trim().toUpperCase() === studentCodeInput.trim().toUpperCase() && s.active);
+          if (found) {
+            setCurrentStudent(found);
+            setSelectedGradeTab(found.grade);
+            setView('student-app');
+            setStudentLoginError('');
+          } else {
+            setStudentLoginError('كود الطالب غير صحيح أو الحساب معطل!');
+          }
+        };
+
+        // إنتاج كود طالب جديد
+        const handleAddStudent = (e) => {
+          e.preventDefault();
+          if (!newStudentName) return;
+          const randomId = 'EQ-' + Math.floor(1000 + Math.random() * 9000);
+          const newStu = {
+            id: randomId,
+            name: newStudentName,
+            grade: newStudentGrade,
+            active: true,
+            createdAt: new Date().toISOString().split('T')[0]
+          };
+          setStudents([...students, newStu]);
+          setNewStudentName('');
+          alert(`تم إنشاء حساب الطالب بنجاح!\nكود الطالب: ${randomId}`);
+        };
+
+        // إضافة درس جديد
+        const handleAddLesson = (e) => {
+          e.preventDefault();
+          if (!newLessonTitle) return;
+          const lessonObj = {
+            id: Date.now(),
+            title: newLessonTitle,
+            grade: newLessonGrade,
+            videoUrl: newLessonVideo || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            pdfUrl: newLessonPdf || '#',
+            description: newLessonDesc
+          };
+          setLessons([...lessons, lessonObj]);
+          setNewLessonTitle(''); setNewLessonVideo(''); setNewLessonPdf(''); setNewLessonDesc('');
+          alert('تم إضافة الدرس بنجاح!');
+        };
+
+        // إضافة سؤال في الكويز
+        const addQuestionField = () => {
+          setQuizQuestions([
+            ...quizQuestions,
+            { question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }
+          ]);
+        };
+
+        // حفظ الكويز الجديد
+        const handleSaveQuiz = (e) => {
+          e.preventDefault();
+          if (!newQuizTitle) return;
+          const quizObj = {
+            id: Date.now(),
+            title: newQuizTitle,
+            grade: newQuizGrade,
+            questions: quizQuestions
+          };
+          setQuizzes([...quizzes, quizObj]);
+          setNewQuizTitle('');
+          setQuizQuestions([{ question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }]);
+          alert('تم نشر الكويز بنجاح!');
+        };
+
+        // تسليم الكويز بواسطة الطالب
+        const handleSubmitQuiz = () => {
+          let score = 0;
+          activeQuiz.questions.forEach((q, idx) => {
+            if (userAnswers[idx] === q.correctAnswer) {
+              score += 1;
+            }
+          });
+          setQuizScore(score);
+          setQuizSubmitted(true);
+
+          // حفظ نتيجة الطالب
+          const resultObj = {
+            studentName: currentStudent.name,
+            studentCode: currentStudent.id,
+            quizTitle: activeQuiz.title,
+            score: score,
+            total: activeQuiz.questions.length,
+            date: new Date().toLocaleString('ar-EG')
+          };
+          setQuizResults([resultObj, ...quizResults]);
+        };
+
+        return (
+          <div class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100">
+            {/* Navbar */}
+            <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+              <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => setView('home')}>
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-500/30">
+                    EQ
+                  </div>
+                  <div>
+                    <h1 class="font-extrabold text-lg md:text-xl tracking-tight bg-gradient-to-r from-indigo-400 via-violet-300 to-purple-400 bg-clip-text text-transparent">
+                      Emad Quzman in English
+                    </h1>
+                    <p class="text-[10px] text-indigo-300/80 font-medium">المنصة التعليمية الشاملة للغة الإنجليزية</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-2 space-x-reverse">
+                  {view === 'student-app' && (
+                    <span class="text-xs bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-lg hidden sm:inline-block">
+                      👨‍🎓 الطالب: <strong class="text-white">{currentStudent?.name}</strong>
+                    </span>
+                  )}
+                  {view === 'teacher-dashboard' && (
+                    <span class="text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg">
+                      👨‍🏫 لوحة المعلم نشطة
+                    </span>
+                  )}
+                  
+                  <button 
+                    onClick={() => {
+                      if (view === 'teacher-dashboard') { setIsTeacher(false); setView('home'); }
+                      else if (view === 'student-app') { setCurrentStudent(null); setView('home'); }
+                      else { setView('teacher-login'); }
+                    }}
+                    class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-xl border border-slate-700 transition font-bold"
+                  >
+                    {view === 'teacher-dashboard' || view === 'student-app' ? 'تسجيل الخروج' : 'دخول المعلم'}
+                  </button>
+                </div>
+              </div>
+            </header>
+
+            {/* Main Section */}
+            <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-grow">
+              
+              {/* PAGE: HOME */}
+              {view === 'home' && (
+                <div class="py-12 text-center space-y-8">
+                  <div class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-2 animate-pulse">
+                    ✨ مرحباً بكم في العام الدراسي الجديد 2026
+                  </div>
+                  
+                  <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-tight max-w-3xl mx-auto">
+                    طريقك نحو الإتقان والدرجة النهائية في <span class="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">اللغة الإنجليزية</span>
+                  </h2>
+
+                  <p class="text-slate-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+                    منصة المستر عماد قزمان المتكاملة. كورس قواعد متكامل، مراجعات، فيديوهات ملخصة، ملفات PDF، واختبارات تفاعلية تصحح فورياً.
+                  </p>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-6">
+                    <button 
+                      onClick={() => setView('student-login')}
+                      class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white p-5 rounded-2xl font-bold shadow-xl shadow-indigo-600/25 transition transform hover:-translate-y-1 flex items-center justify-center space-x-3 space-x-reverse"
+                    >
+                      <span class="text-2xl">👨‍🎓</span>
+                      <span class="text-lg">دخول الطلاب</span>
+                    </button>
+
+                    <button 
+                      onClick={() => setView('teacher-login')}
+                      class="bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 p-5 rounded-2xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center space-x-3 space-x-reverse"
+                    >
+                      <span class="text-2xl">🔐</span>
+                      <span class="text-lg">لوحة المعلم</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE: STUDENT LOGIN */}
+              {view === 'student-login' && (
+                <div class="max-w-md mx-auto bg-slate-900/90 p-8 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                  
+                  <h3 class="text-2xl font-bold text-white mb-2 text-center">دخول منصة الطلاب 👨‍🎓</h3>
+                  <p class="text-slate-400 text-xs text-center mb-6">أدخل الكود الخاص بك للدخول لكورساتك والاختبارات</p>
+
+                  <form onSubmit={handleStudentAuth} class="space-y-4">
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-300 mb-1">كود الطالب الخاص (Student ID)</label>
+                      <input 
+                        type="text" 
+                        value={studentCodeInput}
+                        onChange={(e) => setStudentCodeInput(e.target.value)}
+                        placeholder="مثال: STU-101 أو EQ-1234"
+                        class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-center font-mono text-lg focus:outline-none focus:border-indigo-500 transition"
+                      />
+                    </div>
+
+                    {studentLoginError && <p class="text-red-400 text-xs text-center font-semibold bg-red-500/10 py-2 rounded-lg border border-red-500/20">{studentLoginError}</p>}
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/30">
+                      دخول المنصة
+                    </button>
+                  </form>
+
+                  <button onClick={() => setView('home')} class="w-full text-center text-xs text-slate-500 mt-4 hover:text-slate-300">
+                    العودة للرئيسية
+                  </button>
+                </div>
+              )}
+
+              {/* PAGE: TEACHER LOGIN */}
+              {view === 'teacher-login' && (
+                <div class="max-w-md mx-auto bg-slate-900/90 p-8 rounded-3xl border border-slate-800 shadow-2xl">
+                  <h3 class="text-2xl font-bold text-white mb-2 text-center">لوحة المعلم Mr. Emad 🔐</h3>
+                  <p class="text-slate-400 text-xs text-center mb-6">أدخل كلمة المرور للوصول للوحة التحكم الكاملة</p>
+
+                  <form onSubmit={handleTeacherAuth} class="space-y-4">
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-300 mb-1">كلمة المرور (quzman5656)</label>
+                      <input 
+                        type="password" 
+                        value={teacherPass}
+                        onChange={(e) => setTeacherPass(e.target.value)}
+                        placeholder="أدخل كلمة المرور"
+                        class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-center text-lg focus:outline-none focus:border-indigo-500 transition"
+                      />
+                    </div>
+
+                    {teacherError && <p class="text-red-400 text-xs text-center font-semibold bg-red-500/10 py-2 rounded-lg border border-red-500/20">{teacherError}</p>}
+
+                    <button type="submit" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-violet-600/30">
+                      دخول لوحة التحكم
+                    </button>
+                  </form>
+
+                  <button onClick={() => setView('home')} class="w-full text-center text-xs text-slate-500 mt-4 hover:text-slate-300">
+                    العودة للرئيسية
+                  </button>
+                </div>
+              )}
+
+              {/* PAGE: STUDENT DASHBOARD */}
+              {view === 'student-app' && (
+                <div class="space-y-6">
+                  {/* Grade Tabs */}
+                  <div class="flex border-b border-slate-800 space-x-4 space-x-reverse overflow-x-auto pb-2">
+                    {['1', '2', '3'].map((gradeNum) => (
+                      <button 
+                        key={gradeNum}
+                        onClick={() => setSelectedGradeTab(gradeNum)}
+                        class={`px-6 py-3 rounded-xl font-bold text-sm transition whitespace-nowrap ${
+                          selectedGradeTab === gradeNum 
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' 
+                            : 'bg-slate-900 text-slate-400 hover:bg-slate-800'
+                        }`}
+                      >
+                        الصف {gradeNum === '1' ? 'الأول' : gradeNum === '2' ? 'الثاني' : 'الثالث'} الثانوي
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Content List */}
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Lessons */}
+                    <div class="md:col-span-2 space-y-4">
+                      <h4 class="text-lg font-bold text-white flex items-center space-x-2 space-x-reverse">
+                        <span>🎬</span> <span>الدروس والشروحات المتاحة</span>
+                      </h4>
+
+                    
