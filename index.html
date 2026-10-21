@@ -1,305 +1,243 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Emad Quzman in English</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>* { font-family: 'Cairo', sans-serif; }</style>
-  </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen">
-    <div id="root"></div>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quzman in English</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>*{font-family:'Cairo',sans-serif;}</style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between">
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useEffect} = React;
+const initData = {
+  stus: [{id: 'STU-101', name: 'أحمد محمود', grade: '1'}],
+  less: [{id: 1, title: 'الوحدة الأولى : Grammar', grade: '1', date: '2026-10-15', pdfUrl: '#', desc: 'شرح مبسط لقواعد المنهج.'}],
+  quiz: [{id: 101, title: 'اختبار شامل - Unit 1', grade: '1', time: '15 دقيقة', qs: [{q: 'I _____ English since 2018.', opts: ['have studied', 'studied', 'study', 'am studying'], ans: 0, exp: 'نستخدم المضارع التام لوجود since.'}]}]
+};
 
-    <script type="text/babel">
-      const { useState, useEffect } = React;
+function App() {
+  const [view, setView] = useState('home');
+  const [pass, setPass] = useState('');
+  const [err, setErr] = useState(false);
+  const [sCode, setSCode] = useState('');
+  const [sErr, setSErr] = useState('');
+  const [stus, setStus] = useState(() => JSON.parse(localStorage.getItem('eq_s')) || initData.stus);
+  const [less] = useState(() => JSON.parse(localStorage.getItem('eq_l')) || initData.less);
+  const [quiz] = useState(() => JSON.parse(localStorage.getItem('eq_q')) || initData.quiz);
+  const [curStu, setCurStu] = useState(null);
+  const [grade, setGrade] = useState('1');
+  const [actQ, setActQ] = useState(null);
+  const [ans, setAns] = useState({});
+  const [sub, setSub] = useState(false);
+  const [score, setScore] = useState(0);
+  const [newName, setNewName] = useState('');
+  const [newGrade, setNewGrade] = useState('1');
 
-      const initData = {
-        students: [{ id: 'EQ-101', name: 'أحمد محمود', grade: '1' }],
-        lessons: [{ id: 1, title: 'Unit 1: Grammar Review', grade: '1', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', pdfUrl: '#', description: 'شرح الوحدة الأولى' }],
-        quizzes: [{ id: 101, title: 'اختبار الوحدة 1', grade: '1', questions: [{ question: 'She _____ to school.', options: ['go', 'goes', 'went', 'going'], correctAnswer: 1, explanation: 'المضارع البسيط مع She' }] }],
-        results: []
-      };
+  useEffect(() => localStorage.setItem('eq_s', JSON.stringify(stus)), [stus]);
 
-      function App() {
-        const [view, setView] = useState('home');
-        const [passcode, setPasscode] = useState('');
-        const [error, setError] = useState('');
-        const [students, setStudents] = useState(() => JSON.parse(localStorage.getItem('eq_stus')) || initData.students);
-        const [lessons, setLessons] = useState(() => JSON.parse(localStorage.getItem('eq_less')) || initData.lessons);
-        const [quizzes, setQuizzes] = useState(() => JSON.parse(localStorage.getItem('eq_quiz')) || initData.quizzes);
-        const [results, setResults] = useState(() => JSON.parse(localStorage.getItem('eq_res')) || initData.results);
+  return (
+    <div class="flex flex-col min-h-screen">
+      <header class="border-b border-slate-800 bg-[#0f172a]/90 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+          <div class="flex items-center space-x-2 space-x-reverse cursor-pointer" onClick={() => setView('home')}>
+            <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg">🎓</div>
+            <div>
+              <h1 class="font-bold text-sm text-white">Quzman in English</h1>
+              <p class="text-[10px] text-slate-400">منصة أستاذ قزمان</p>
+            </div>
+          </div>
+          {view !== 'home' ? (
+            <button onClick={() => setView('home')} class="bg-slate-800 text-xs px-3 py-1.5 rounded-lg border border-slate-700">خروج ✕</button>
+          ) : (
+            <div class="flex space-x-2 space-x-reverse">
+              <button onClick={() => setView('s-login')} class="bg-indigo-600 text-xs px-3 py-1.5 rounded-lg font-bold">دخول الطلاب</button>
+              <button onClick={() => setView('t-login')} class="bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1.5 rounded-lg font-bold">لوحة المعلم 🔒</button>
+            </div>
+          )}
+        </div>
+      </header>
 
-        const [studentCode, setStudentCode] = useState('');
-        const [currentStudent, setCurrentStudent] = useState(null);
-        const [activeGrade, setActiveGrade] = useState('1');
-        const [activeQuiz, setActiveQuiz] = useState(null);
-        const [userAnswers, setUserAnswers] = useState({});
-        const [quizScore, setQuizScore] = useState(null);
-
-        // Teacher Form States
-        const [newStuName, setNewStuName] = useState('');
-        const [newStuGrade, setNewStuGrade] = useState('1');
-        const [lessTitle, setLessTitle] = useState('');
-        const [lessGrade, setLessGrade] = useState('1');
-        const [lessVideo, setLessVideo] = useState('');
-        const [lessPdf, setLessPdf] = useState('');
-        const [quizTitle, setQuizTitle] = useState('');
-        const [quizGrade, setQuizGrade] = useState('1');
-        const [quizQuestions, setQuizQuestions] = useState([{ question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }]);
-
-        useEffect(() => localStorage.setItem('eq_stus', JSON.stringify(students)), [students]);
-        useEffect(() => localStorage.setItem('eq_less', JSON.stringify(lessons)), [lessons]);
-        useEffect(() => localStorage.setItem('eq_quiz', JSON.stringify(quizzes)), [quizzes]);
-        useEffect(() => localStorage.setItem('eq_res', JSON.stringify(results)), [results]);
-
-        const loginTeacher = (e) => {
-          e.preventDefault();
-          if (passcode === 'quzman5656') { setView('teacher-dashboard'); setError(''); }
-          else setError('كلمة المرور غير صحيحة!');
-        };
-
-        const loginStudent = (e) => {
-          e.preventDefault();
-          const found = students.find(s => s.id.toUpperCase() === studentCode.trim().toUpperCase());
-          if (found) { setCurrentStudent(found); setActiveGrade(found.grade); setView('student-app'); setError(''); }
-          else setError('كود الطالب غير صحيح!');
-        };
-
-        const addStudent = (e) => {
-          e.preventDefault(); if (!newStuName) return;
-          const id = 'EQ-' + Math.floor(100 + Math.random() * 900);
-          setStudents([...students, { id, name: newStuName, grade: newStuGrade }]);
-          setNewStuName(''); alert(`تم إنشاء الطالب!\nالكود: ${id}`);
-        };
-
-        const addLesson = (e) => {
-          e.preventDefault(); if (!lessTitle) return;
-          setLessons([...lessons, { id: Date.now(), title: lessTitle, grade: lessGrade, videoUrl: lessVideo, pdfUrl: lessPdf, description: '' }]);
-          setLessTitle(''); setLessVideo(''); setLessPdf(''); alert('تم نشر الدرس!');
-        };
-
-        const saveQuiz = (e) => {
-          e.preventDefault(); if (!quizTitle) return;
-          setQuizzes([...quizzes, { id: Date.now(), title: quizTitle, grade: quizGrade, questions: quizQuestions }]);
-          setQuizTitle(''); setQuizQuestions([{ question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }]);
-          alert('تم نشر الكويز!');
-        };
-
-        const submitQuiz = () => {
-          let score = 0;
-          activeQuiz.questions.forEach((q, idx) => { if (userAnswers[idx] === q.correctAnswer) score++; });
-          setQuizScore(score);
-          setResults([{ studentName: currentStudent.name, studentCode: currentStudent.id, quizTitle: activeQuiz.title, score, total: activeQuiz.questions.length, date: new Date().toLocaleDateString('ar-EG') }, ...results]);
-        };
-
-        return (
-          <div class="min-h-screen flex flex-col justify-between">
-            <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
-              <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => setView('home')}>
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center font-black text-xl shadow-lg">EQ</div>
-                  <div>
-                    <h1 class="font-black text-lg text-indigo-400">Emad Quzman in English</h1>
-                    <p class="text-[10px] text-slate-400">منصة اللغة الإنجليزية التعليمية</p>
-                  </div>
+      <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow">
+        {view === 'home' && (
+          <div class="space-y-6">
+            <div class="bg-slate-900/60 p-6 rounded-3xl border border-slate-800 text-center space-y-3">
+              <span class="text-xs text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full">المنصة الأولى للتميز في اللغة الإنجليزية</span>
+              <h2 class="text-3xl md:text-4xl font-black text-white">تعلم الإنجليزية مع <span class="text-indigo-400">أستاذ قزمان</span></h2>
+              <p class="text-slate-400 text-xs max-w-lg mx-auto">شروحات وافية، ملفات PDF، واختبارات تفاعلية فورية.</p>
+            </div>
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-4">
+              <h3 class="font-bold text-white text-base flex items-center space-x-1 space-x-reverse"><span>📖</span> <span>بوابة الطلاب</span></h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const f = stus.find(s => s.id.toUpperCase() === sCode.trim().toUpperCase());
+                if(f) { setCurStu(f); setGrade(f.grade); setView('s-app'); setSErr(''); } else setSErr('الكود غير صحيح!');
+              }} class="space-y-3">
+                <input type="text" value={sCode} onChange={e => setSCode(e.target.value)} placeholder="أدخل كود الطالب (مثال: STU-101)" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white focus:outline-none focus:border-indigo-500"/>
+                {sErr && <p class="text-red-400 text-xs text-center font-bold">{sErr}</p>}
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl text-xs font-bold">دخول برقم الطالب</button>
+                  <button type="button" onClick={() => { setCurStu({name: 'زائر'}); setView('s-app'); }} class="bg-slate-800 text-slate-300 py-3 rounded-xl text-xs font-bold border border-slate-700">دخول كزائر</button>
                 </div>
-                <button onClick={() => setView(view === 'home' ? 'teacher-login' : 'home')} class="bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2 rounded-xl font-bold">
-                  {view === 'teacher-dashboard' || view === 'student-app' ? 'خروج' : 'دخول المعلم 🔐'}
-                </button>
+              </form>
+            </div>
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-3">
+              <h3 class="font-bold text-white text-base flex items-center space-x-1 space-x-reverse"><span>🔒</span> <span>لوحة المعلم</span></h3>
+              <button onClick={() => setView('t-login')} class="w-full bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 py-3 rounded-xl text-xs font-bold">تسجيل دخول المعلم ←</button>
+            </div>
+          </div>
+        )}
+
+        {view === 's-login' && (
+          <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-4 my-10">
+            <h3 class="text-xl font-bold text-center">دخول الطلاب 👨‍🎓</h3>
+            <form onSubmit={e => { e.preventDefault(); setView('home'); }} class="space-y-4">
+              <input type="text" placeholder="أدخل كود الطالب" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white"/>
+              <button type="submit" class="w-full bg-indigo-600 py-3 rounded-xl text-xs font-bold">دخول</button>
+            </form>
+          </div>
+        )}
+
+        {view === 't-login' && (
+          <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-6 my-10">
+            <div class="text-center space-y-1">
+              <h3 class="text-xl font-bold text-white">لوحة تحكم المعلم</h3>
+              <p class="text-xs text-slate-400">أدخل كود المرور (quzman5656)</p>
+            </div>
+            <form onSubmit={e => { e.preventDefault(); if(pass === 'quzman5656') { setView('t-dash'); setErr(false); setPass(''); } else setErr(true); }} class="space-y-4">
+              <input type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="Passcode" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-center font-mono text-white focus:outline-none focus:border-emerald-500"/>
+              {err && <p class="text-red-400 text-xs text-center font-bold">كلمة المرور غير صحيحة!</p>}
+              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-xl text-xs font-bold">تأكيد الدخول</button>
+            </form>
+          </div>
+        )}
+
+        {view === 't-dash' && (
+          <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+              <h3 class="font-bold text-white text-base">مرحباً بك يا أستاذ قزمان 🛠️</h3>
+              <button onClick={() => setView('home')} class="bg-red-600 text-xs px-3 py-1.5 rounded-lg font-bold">خروج</button>
+            </div>
+            <div class="space-y-4">
+              <h4 class="font-bold text-sm text-indigo-300">👥 توليد كود طالب جديد</h4>
+              <form onSubmit={e => { e.preventDefault(); if(!newName) return; const id = 'QZ-' + newGrade + 'SEC-' + Math.floor(1000 + Math.random()*9000); setStus([...stus, {id, name: newName, grade: newGrade}]); setNewName(''); alert('تم إنشاء الكود: ' + id); }} class="space-y-3">
+                <input type="text" value={newName} onChange={e => setNewName(e.target.value)} placeholder="اسم الطالب الثلاثي" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"/>
+                <select value={newGrade} onChange={e => setNewGrade(e.target.value)} class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white">
+                  <option value="1">الصف الأول الثانوي</option><option value="2">الصف الثاني الثانوي</option><option value="3">الصف الثالث الثانوي</option>
+                </select>
+                <button type="submit" class="w-full bg-indigo-600 py-3 rounded-xl text-xs font-bold">إنشاء الكود</button>
+              </form>
+              <div class="space-y-2 pt-2 max-h-40 overflow-y-auto">
+                {stus.map((s, i) => (
+                  <div key={i} class="flex justify-between items-center bg-slate-950 p-3 rounded-xl text-xs border border-slate-800">
+                    <span>{s.name} (الصف {s.grade})</span>
+                    <span class="font-mono text-indigo-400 font-bold">{s.id}</span>
+                  </div>
+                ))}
               </div>
-            </header>
+            </div>
+          </div>
+        )}
 
-            <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-grow">
-              {view === 'home' && (
-                <div class="py-12 text-center space-y-6">
-                  <h2 class="text-4xl md:text-6xl font-black max-w-3xl mx-auto">طريقك للتميز مع المستر <span class="text-indigo-400">عماد قزمان</span></h2>
-                  <p class="text-slate-400 text-sm max-w-lg mx-auto">دروس تفاعلية، شروحات فيديو، ملازم PDF، واختبارات تصحح تلقائياً.</p>
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-4">
-                    <button onClick={() => { setError(''); setView('student-login'); }} class="bg-indigo-600 hover:bg-indigo-500 p-5 rounded-2xl font-bold text-lg shadow-xl">👨‍🎓 دخول الطلاب</button>
-                    <button onClick={() => { setError(''); setView('teacher-login'); }} class="bg-slate-900 border border-slate-800 p-5 rounded-2xl font-bold text-lg">🔐 لوحة المعلم</button>
-                  </div>
+        {view === 's-app' && (
+          <div class="space-y-6">
+            <div class="flex border-b border-slate-800 space-x-3 space-x-reverse pb-2">
+              {['1', '2', '3'].map(g => (
+                <button key={g} onClick={() => setGrade(g)} class={`px-5 py-2.5 rounded-xl font-bold text-xs ${grade === g ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-900 text-slate-400 border border-slate-800'}`}>
+                  {g} ثانوي
+                </button>
+              ))}
+            </div>
+
+            <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
+              <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-800 pb-2">
+                <span class="font-bold text-indigo-300">📁 المذكرات والفيديوهات للشرح</span>
+              </div>
+              {less.filter(l => l.grade === grade).map(l => (
+                <div key={l.id} class="space-y-2 pt-1">
+                  <h4 class="font-bold text-sm text-white">{l.title}</h4>
+                  <p class="text-xs text-slate-400">{l.desc}</p>
+                  <a href={l.pdfUrl} target="_blank" class="inline-flex items-center space-x-1 space-x-reverse bg-indigo-600 text-white text-xs px-4 py-2 rounded-xl font-bold"><span>📥</span> <span>تحميل ملف PDF</span></a>
                 </div>
-              )}
+              ))}
+            </div>
 
-              {view === 'student-login' && (
-                <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-4">
-                  <h3 class="text-2xl font-bold text-center">دخول الطالب 👨‍🎓</h3>
-                  <form onSubmit={loginStudent} class="space-y-4">
-                    <input type="text" value={studentCode} onChange={(e) => setStudentCode(e.target.value)} placeholder="الكود (مثال: EQ-101)" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-center font-mono text-lg" />
-                    {error && <p class="text-red-400 text-xs text-center font-bold">{error}</p>}
-                    <button type="submit" class="w-full bg-indigo-600 py-3.5 rounded-xl font-bold">دخول المنصة</button>
-                  </form>
-                </div>
-              )}
-
-              {view === 'teacher-login' && (
-                <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-4">
-                  <h3 class="text-2xl font-bold text-center">لوحة المعلم 🔐</h3>
-                  <form onSubmit={loginTeacher} class="space-y-4">
-                    <input type="password" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="كلمة المرور (quzman5656)" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-center text-lg" />
-                    {error && <p class="text-red-400 text-xs text-center font-bold">{error}</p>}
-                    <button type="submit" class="w-full bg-violet-600 py-3.5 rounded-xl font-bold">دخول التحكم</button>
-                  </form>
-                </div>
-              )}
-
-              {view === 'student-app' && (
-                <div class="space-y-6">
-                  <div class="flex border-b border-slate-800 space-x-3 space-x-reverse pb-2">
-                    {['1', '2', '3'].map(g => (
-                      <button key={g} onClick={() => setActiveGrade(g)} class={`px-5 py-2.5 rounded-xl font-bold text-xs ${activeGrade === g ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}`}>الصف {g === '1' ? 'الأول' : g === '2' ? 'الثاني' : 'الثالث'} الثانوي</button>
-                    ))}
+            <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
+              <div class="font-bold text-indigo-300 text-xs">📝 الكويزات التفاعلية</div>
+              {quiz.filter(q => q.grade === grade).map(q => (
+                <div key={q.id} class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex justify-between items-center">
+                  <div>
+                    <h4 class="font-bold text-white text-sm">{q.title}</h4>
+                    <p class="text-[11px] text-slate-400 mt-0.5">أسئلة: {q.qs.length} | المدة: {q.time}</p>
                   </div>
+                  <button onClick={() => { setActQ(q); setAns({}); setSub(false); }} class="bg-emerald-600 text-white text-xs px-4 py-2 rounded-xl font-bold">بدء الكويز 🚀</button>
+                </div>
+              ))}
+            </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2 space-y-4">
-                      <h4 class="font-bold text-lg">🎬 الدروس والشروحات</h4>
-                      {lessons.filter(l => l.grade === activeGrade).map(l => (
-                        <div key={l.id} class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
-                          <h5 class="font-bold text-indigo-300">{l.title}</h5>
-                          {l.videoUrl && <iframe src={l.videoUrl} class="w-full aspect-video rounded-xl bg-black"></iframe>}
-                          {l.pdfUrl && l.pdfUrl !== '#' && <a href={l.pdfUrl} target="_blank" class="inline-block text-xs bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-lg">📄 تحميل PDF</a>}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div class="space-y-4">
-                      <h4 class="font-bold text-lg">📝 الكويزات المتاحة</h4>
-                      {quizzes.filter(q => q.grade === activeGrade).map(q => (
-                        <div key={q.id} class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
-                          <h5 class="font-bold text-sm">{q.title}</h5>
-                          <button onClick={() => { setActiveQuiz(q); setUserAnswers({}); setQuizScore(null); }} class="w-full bg-violet-600 py-2 rounded-xl text-xs font-bold">بدء الاختبار 🚀</button>
-                        </div>
-                      ))}
-                    </div>
+            {actQ && (
+              <div class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
+                <div class="bg-slate-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl border border-slate-800 space-y-6">
+                  <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h3 class="font-bold text-sm text-white">{actQ.title}</h3>
+                    <button onClick={() => setActQ(null)} class="text-slate-400 font-bold">✕</button>
                   </div>
-
-                  {activeQuiz && (
-                    <div class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-                      <div class="bg-slate-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl border border-slate-800 space-y-6">
-                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                          <h3 class="font-bold">{activeQuiz.title}</h3>
-                          <button onClick={() => setActiveQuiz(null)}>✕</button>
-                        </div>
-
-                        {quizScore === null ? (
-                          <div class="space-y-4">
-                            {activeQuiz.questions.map((q, idx) => (
-                              <div key={idx} class="bg-slate-950 p-4 rounded-2xl space-y-2">
-                                <p class="font-bold text-xs text-indigo-200">{idx + 1}. {q.question}</p>
-                                <div class="grid grid-cols-2 gap-2">
-                                  {q.options.map((opt, oIdx) => (
-                                    <button key={oIdx} onClick={() => setUserAnswers({...userAnswers, [idx]: oIdx})} class={`p-2.5 text-right rounded-xl text-xs border ${userAnswers[idx] === oIdx ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-300'}`}>{opt}</button>
-                                  ))}
-                                </div>
-                              </div>
+                  {!sub ? (
+                    <div class="space-y-6">
+                      {actQ.qs.map((q, qIdx) => (
+                        <div key={qIdx} class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                          <p class="font-bold text-xs text-indigo-200">#{qIdx + 1} - {q.q}</p>
+                          <div class="grid grid-cols-1 gap-2">
+                            {q.opts.map((opt, oIdx) => (
+                              <button key={oIdx} onClick={() => setAns({...ans, [qIdx]: oIdx})} class={`p-3 text-right rounded-xl text-xs border font-medium ${ans[qIdx] === oIdx ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-300'}`}>
+                                {opt}
+                              </button>
                             ))}
-                            <button onClick={submitQuiz} class="w-full bg-emerald-600 py-3 rounded-xl font-bold text-xs">إنهاء وتسليم الكويز</button>
                           </div>
-                        ) : (
-                          <div class="text-center space-y-4 py-2">
-                            <h4 class="text-xl font-bold">النتيجة: <span class="text-emerald-400">{quizScore}</span> / {activeQuiz.questions.length}</h4>
-                            <div class="text-right space-y-2 border-t border-slate-800 pt-3">
-                              {activeQuiz.questions.map((q, idx) => (
-                                <div key={idx} class="bg-slate-950 p-3 rounded-xl text-xs">
-                                  <p class="font-bold">{idx + 1}. {q.question}</p>
-                                  <p class="text-emerald-400">الإجابة الصحيحة: {q.options[q.correctAnswer]}</p>
-                                  {q.explanation && <p class="text-slate-400">السبب: {q.explanation}</p>}
-                                </div>
-                              ))}
-                            </div>
-                            <button onClick={() => setActiveQuiz(null)} class="w-full bg-slate-800 py-2 rounded-xl text-xs">إغلاق</button>
-                          </div>
-                        )}
+                        </div>
+                      ))}
+                      <button onClick={() => { let sc = 0; actQ.qs.forEach((q, i) => { if(ans[i] === q.ans) sc++; }); setScore(sc); setSub(true); }} class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs">إنهاء وتسليم الكويز</button>
+                    </div>
+                  ) : (
+                    <div class="space-y-6 text-center py-2">
+                      <div class="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl font-bold">🏆</div>
+                      <div>
+                        <h4 class="text-lg font-bold text-white">تم تسليم الكويز بنجاح!</h4>
+                        <p class="text-xs text-slate-400 mt-1">النتيجة: <strong class="text-emerald-400">{score}</strong> من {actQ.qs.length}</p>
                       </div>
+                      <div class="text-right space-y-3 pt-3 border-t border-slate-800">
+                        {actQ.qs.map((q, idx) => {
+                          const ok = ans[idx] === q.ans;
+                          return (
+                            <div key={idx} class={`p-3 rounded-xl border text-xs space-y-1 ${ok ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-red-950/20 border-red-500/30'}`}>
+                              <p class="font-bold text-white">{idx+1}. {q.q}</p>
+                              <p class="text-emerald-400">الإجابة الصحيحة: {q.opts[q.ans]}</p>
+                              {q.exp && <p class="text-slate-400 italic">💡 الشرح: {q.exp}</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <button onClick={() => setActQ(null)} class="w-full bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs">إغلاق</button>
                     </div>
                   )}
                 </div>
-              )}
-
-              {view === 'teacher-dashboard' && (
-                <div class="space-y-6">
-                  <div class="flex justify-between items-center bg-indigo-950 p-6 rounded-3xl border border-indigo-800">
-                    <h3 class="text-xl font-black">لوحة تحكم المعلم Mr. Emad 🛠️</h3>
-                    <button onClick={() => setView('home')} class="bg-red-600 text-xs px-3 py-1.5 rounded-xl font-bold">خروج</button>
-                  </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
-                      <h4 class="font-bold text-sm">➕ إضافة طالب جديد</h4>
-                      <form onSubmit={addStudent} class="space-y-3">
-                        <input type="text" value={newStuName} onChange={(e) => setNewStuName(e.target.value)} placeholder="اسم الطالب" class="w-full p-2.5 bg-slate-950 border rounded-xl text-xs" />
-                        <select value={newStuGrade} onChange={(e) => setNewStuGrade(e.target.value)} class="w-full p-2.5 bg-slate-950 border rounded-xl text-xs">
-                          <option value="1">الصف الأول</option><option value="2">الصف الثاني</option><option value="3">الصف الثالث</option>
-                        </select>
-                        <button type="submit" class="w-full bg-indigo-600 py-2.5 rounded-xl text-xs font-bold">توليد الكود</button>
-                      </form>
-                      <div class="max-h-32 overflow-y-auto space-y-1 pt-2">
-                        {students.map(s => <div key={s.id} class="flex justify-between bg-slate-950 p-2 rounded-xl text-xs"><span>{s.name} (صف {s.grade})</span><span class="font-mono text-indigo-400 font-bold">{s.id}</span></div>)}
-                      </div>
-                    </div>
-
-                    <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
-                      <h4 class="font-bold text-sm">📚 إضافة درس وشرح</h4>
-                      <form onSubmit={addLesson} class="space-y-3">
-                        <input type="text" value={lessTitle} onChange={(e) => setLessTitle(e.target.value)} placeholder="عنوان الدرس" class="w-full p-2.5 bg-slate-950 border rounded-xl text-xs" />
-                        <select value={lessGrade} onChange={(e) => setLessGrade(e.target.value)} class="w-full p-2.5 bg-slate-950 border rounded-xl text-xs">
-                          <option value="1">الصف الأول</option><option value="2">الصف الثاني</option><option value="3">الصف الثالث</option>
-                        </select>
-                        <input type="text" value={lessVideo} onChange={(e) => setLessVideo(e.target.value)} placeholder="رابط فيديو YouTube Embed" class="w-full p-2.5 bg-slate-950 border rounded-xl text-xs" />
-                        <input type="text" value={lessPdf} onChange={(e) => setLessPdf(e.target.value)} placeholder="رابط ملزمة PDF" class="w-full p-2.5 bg-slate-950 border rounded-xl text-xs" />
-                        <button type="submit" class="w-full bg-violet-600 py-2.5 rounded-xl text-xs font-bold">نشر الدرس</button>
-                      </form>
-                    </div>
-                  </div>
-
-                  <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-4">
-                    <h4 class="font-bold text-sm">📝 إضافة كويز جديد</h4>
-                    <form onSubmit={saveQuiz} class="space-y-3">
-                      <div class="grid grid-cols-2 gap-2">
-                        <input type="text" value={quizTitle} onChange={(e) => setQuizTitle(e.target.value)} placeholder="عنوان الكويز" class="p-2.5 bg-slate-950 border rounded-xl text-xs" />
-                        <select value={quizGrade} onChange={(e) => setQuizGrade(e.target.value)} class="p-2.5 bg-slate-950 border rounded-xl text-xs">
-                          <option value="1">الصف الأول</option><option value="2">الصف الثاني</option><option value="3">الصف الثالث</option>
-                        </select>
-                      </div>
-                      {quizQuestions.map((q, qIdx) => (
-                        <div key={qIdx} class="bg-slate-950 p-3 rounded-2xl border space-y-2 text-xs">
-                          <input type="text" value={q.question} onChange={(e) => { const u = [...quizQuestions]; u[qIdx].question = e.target.value; setQuizQuestions(u); }} placeholder="السؤال بالإنجليزية" class="w-full p-2 bg-slate-900 border rounded-xl" />
-                          <div class="grid grid-cols-2 gap-2">
-                            {q.options.map((opt, oIdx) => (
-                              <input key={oIdx} type="text" value={opt} onChange={(e) => { const u = [...quizQuestions]; u[qIdx].options[oIdx] = e.target.value; setQuizQuestions(u); }} placeholder={`خيار ${oIdx + 1}`} class="p-2 bg-slate-900 border rounded-xl" />
-                            ))}
-                          </div>
-                          <div class="grid grid-cols-2 gap-2">
-                            <select value={q.correctAnswer} onChange={(e) => { const u = [...quizQuestions]; u[qIdx].correctAnswer = parseInt(e.target.value); setQuizQuestions(u); }} class="p-2 bg-slate-900 border rounded-xl">
-                              <option value={0}>الإجابة الصحيحة: خيار 1</option><option value={1}>خيار 2</option><option value={2}>خيار 3</option><option value={3}>خيار 4</option>
-                            </select>
-                            <input type="text" value={q.explanation} onChange={(e) => { const u = [...quizQuestions]; u[qIdx].explanation = e.target.value; setQuizQuestions(u); }} placeholder="التوضيح (اختياري)" class="p-2 bg-slate-900 border rounded-xl" />
-                          </div>
-                        </div>
-                      ))}
-                      <div class="flex space-x-2 space-x-reverse">
-                        <button type="button" onClick={() => setQuizQuestions([...quizQuestions, { question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }])} class="bg-slate-800 text-xs font-bold px-3 py-2 rounded-xl">+ سؤال</button>
-                        <button type="submit" class="bg-emerald-600 text-xs font-bold px-5 py-2 rounded-xl">نشر الكويز</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </main>
-
-            <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-              جميع الحقوق محفوظة © Emad Quzman in English 2026
-            </footer>
+              </div>
+            )}
           </div>
-        );
-      }
+        )}
+      </main>
 
-      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-    </script>
-  </body>
+      <footer class="border-t border-slate-800 bg-[#070a12] py-4 text-center text-xs text-slate-500">
+        جميع الحقوق محفوظة © Quzman in English 2026
+      </footer>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
 </html>
