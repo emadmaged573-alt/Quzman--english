@@ -16,40 +16,37 @@
 const {useState, useEffect} = React;
 const initData = {
   stus: [{id: 'STU-101', name: 'أحمد محمود', grade: '1'}],
-  less: [{id: 1, title: 'الوحدة الأولى : Grammar', grade: '1', date: '2026-10-15', pdfUrl: '#', desc: 'شرح مبسط لقواعد المنهج.'}],
-  quiz: [{id: 101, title: 'اختبار شامل - Unit 1', grade: '1', time: '15 دقيقة', qs: [{q: 'I _____ English since 2018.', opts: ['have studied', 'studied', 'study', 'am studying'], ans: 0, exp: 'نستخدم المضارع التام لوجود since.'}]}]
+  less: [{id: 1, title: 'الوحدة الأولى : Grammar', grade: '1', pdfUrl: '#', videoUrl: '', desc: 'شرح مبسط لقواعد المنهج.'}],
+  quiz: [{id: 101, title: 'اختبار شامل - Unit 1', grade: '1', time: '15 دقيقة', qs: [{q: 'I _____ English since 2018.', opts: ['have studied', 'studied', 'study', 'am studying'], ans: 0, exp: 'المضارع التام مع since.'}]}]
 };
 
 function App() {
   const [view, setView] = useState('home');
-  const [pass, setPass] = useState('');
-  const [err, setErr] = useState(false);
-  const [sCode, setSCode] = useState('');
-  const [sErr, setSErr] = useState('');
+  const [tPass, setTPass] = useState(''); const [tErr, setTErr] = useState(false);
+  const [sCode, setSCode] = useState(''); const [sErr, setSErr] = useState('');
   const [stus, setStus] = useState(() => JSON.parse(localStorage.getItem('eq_s')) || initData.stus);
-  const [less] = useState(() => JSON.parse(localStorage.getItem('eq_l')) || initData.less);
-  const [quiz] = useState(() => JSON.parse(localStorage.getItem('eq_q')) || initData.quiz);
-  const [curStu, setCurStu] = useState(null);
-  const [grade, setGrade] = useState('1');
-  const [actQ, setActQ] = useState(null);
-  const [ans, setAns] = useState({});
-  const [sub, setSub] = useState(false);
-  const [score, setScore] = useState(0);
-  const [newName, setNewName] = useState('');
-  const [newGrade, setNewGrade] = useState('1');
+  const [less, setLess] = useState(() => JSON.parse(localStorage.getItem('eq_l')) || initData.less);
+  const [quiz, setQuiz] = useState(() => JSON.parse(localStorage.getItem('eq_q')) || initData.quiz);
+  
+  const [curStu, setCurStu] = useState(null); const [grade, setGrade] = useState('1');
+  const [actQ, setActQ] = useState(null); const [ans, setAns] = useState({}); const [sub, setSub] = useState(false); const [score, setScore] = useState(0);
+  
+  const [tTab, setTTab] = useState('stus');
+  const [newName, setNewName] = useState(''); const [newGrade, setNewGrade] = useState('1');
+  const [lTitle, setLTitle] = useState(''); const [lGrade, setLGrade] = useState('1'); const [lVideo, setLVideo] = useState(''); const [lPdf, setLPdf] = useState(''); const [lDesc, setLDesc] = useState('');
+  const [qTitle, setQTitle] = useState(''); const [qGrade, setQGrade] = useState('1'); const [qs, setQs] = useState([{q: '', opts: ['', '', '', ''], ans: 0, exp: ''}]);
 
-  useEffect(() => localStorage.setItem('eq_s', JSON.stringify(stus)), [stus]);
+  useEffect(() => { localStorage.setItem('eq_s', JSON.stringify(stus)); }, [stus]);
+  useEffect(() => { localStorage.setItem('eq_l', JSON.stringify(less)); }, [less]);
+  useEffect(() => { localStorage.setItem('eq_q', JSON.stringify(quiz)); }, [quiz]);
 
   return (
     <div class="flex flex-col min-h-screen">
       <header class="border-b border-slate-800 bg-[#0f172a]/90 sticky top-0 z-50 px-4 py-3">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
           <div class="flex items-center space-x-2 space-x-reverse cursor-pointer" onClick={() => setView('home')}>
-            <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg">🎓</div>
-            <div>
-              <h1 class="font-bold text-sm text-white">Quzman in English</h1>
-              <p class="text-[10px] text-slate-400">منصة أستاذ قزمان</p>
-            </div>
+            <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white">🎓</div>
+            <div><h1 class="font-bold text-sm text-white">Quzman in English</h1><p class="text-[10px] text-slate-400">منصة أستاذ قزمان</p></div>
           </div>
           {view !== 'home' ? (
             <button onClick={() => setView('home')} class="bg-slate-800 text-xs px-3 py-1.5 rounded-lg border border-slate-700">خروج ✕</button>
@@ -62,118 +59,131 @@ function App() {
         </div>
       </header>
 
-      <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow">
+      <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow space-y-6">
         {view === 'home' && (
           <div class="space-y-6">
+            {/* Hero Section */}
             <div class="bg-slate-900/60 p-6 rounded-3xl border border-slate-800 text-center space-y-3">
-              <span class="text-xs text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full">المنصة الأولى للتميز في اللغة الإنجليزية</span>
-              <h2 class="text-3xl md:text-4xl font-black text-white">تعلم الإنجليزية مع <span class="text-indigo-400">أستاذ قزمان</span></h2>
-              <p class="text-slate-400 text-xs max-w-lg mx-auto">شروحات وافية، ملفات PDF، واختبارات تفاعلية فورية.</p>
+              <span class="text-xs text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full font-bold">هدفنا: الفل مارك فقط لا غير 💯</span>
+              <h2 class="text-3xl font-black text-white">تعلم الإنجليزية مع <span class="text-indigo-400">أستاذ قزمان</span></h2>
+              <p class="text-slate-400 text-xs max-w-lg mx-auto">منصة تعليمية متكاملة لطلاب المرحلة الثانوية لتأمين الدرجة النهائية بكل تفوق.</p>
             </div>
-            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-4">
-              <h3 class="font-bold text-white text-base flex items-center space-x-1 space-x-reverse"><span>📖</span> <span>بوابة الطلاب</span></h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const f = stus.find(s => s.id.toUpperCase() === sCode.trim().toUpperCase());
-                if(f) { setCurStu(f); setGrade(f.grade); setView('s-app'); setSErr(''); } else setSErr('الكود غير صحيح!');
-              }} class="space-y-3">
-                <input type="text" value={sCode} onChange={e => setSCode(e.target.value)} placeholder="أدخل كود الطالب (مثال: STU-101)" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white focus:outline-none focus:border-indigo-500"/>
+
+            {/* Student Portal */}
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-3">
+              <h3 class="font-bold text-white text-base">📖 بوابة الطلاب</h3>
+              <form onSubmit={e => { e.preventDefault(); const f = stus.find(s => s.id.toUpperCase() === sCode.trim().toUpperCase()); if(f) { setCurStu(f); setGrade(f.grade); setView('s-app'); setSErr(''); } else setSErr('الكود غير صحيح!'); }} class="space-y-3">
+                <input type="text" value={sCode} onChange={e => setSCode(e.target.value)} placeholder="أدخل كود الطالب (مثال: STU-101)" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white"/>
                 {sErr && <p class="text-red-400 text-xs text-center font-bold">{sErr}</p>}
                 <div class="grid grid-cols-2 gap-2">
-                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl text-xs font-bold">دخول برقم الطالب</button>
+                  <button type="submit" class="bg-indigo-600 py-3 rounded-xl text-xs font-bold">دخول برقم الطالب</button>
                   <button type="button" onClick={() => { setCurStu({name: 'زائر'}); setView('s-app'); }} class="bg-slate-800 text-slate-300 py-3 rounded-xl text-xs font-bold border border-slate-700">دخول كزائر</button>
                 </div>
               </form>
             </div>
-            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-3">
-              <h3 class="font-bold text-white text-base flex items-center space-x-1 space-x-reverse"><span>🔒</span> <span>لوحة المعلم</span></h3>
-              <button onClick={() => setView('t-login')} class="w-full bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 py-3 rounded-xl text-xs font-bold">تسجيل دخول المعلم ←</button>
-            </div>
-          </div>
-        )}
 
-        {view === 's-login' && (
-          <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-4 my-10">
-            <h3 class="text-xl font-bold text-center">دخول الطلاب 👨‍🎓</h3>
-            <form onSubmit={e => { e.preventDefault(); setView('home'); }} class="space-y-4">
-              <input type="text" placeholder="أدخل كود الطالب" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-center font-mono text-white"/>
-              <button type="submit" class="w-full bg-indigo-600 py-3 rounded-xl text-xs font-bold">دخول</button>
-            </form>
+            {/* Who We Are & Features */}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-2">
+                <h4 class="font-bold text-indigo-300 text-sm">🌟 من نحن؟</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">منصة تعليمية متخصصة في تدريس اللغة الإنجليزية للمرحلة الثانوية تحت إشراف أستاذ قزمان، نهدف لتقديم محتوى احترافي يضمن التفوق الدراسي.</p>
+              </div>
+              <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-2">
+                <h4 class="font-bold text-emerald-400 text-sm">🚀 مميزاتنا</h4>
+                <ul class="text-xs text-slate-400 space-y-1 list-disc list-inside">
+                  <li>شروحات فيديو مبسطة وشاملة.</li>
+                  <li>ملفات PDF وملازم تدريبية حديثة.</li>
+                  <li>كويزات تفاعلية تصحح فورياً مع التوضيح.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         )}
 
         {view === 't-login' && (
-          <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-6 my-10">
-            <div class="text-center space-y-1">
-              <h3 class="text-xl font-bold text-white">لوحة تحكم المعلم</h3>
-              <p class="text-xs text-slate-400">أدخل كود المرور (quzman5656)</p>
-            </div>
-            <form onSubmit={e => { e.preventDefault(); if(pass === 'quzman5656') { setView('t-dash'); setErr(false); setPass(''); } else setErr(true); }} class="space-y-4">
-              <input type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="Passcode" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-center font-mono text-white focus:outline-none focus:border-emerald-500"/>
-              {err && <p class="text-red-400 text-xs text-center font-bold">كلمة المرور غير صحيحة!</p>}
-              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-xl text-xs font-bold">تأكيد الدخول</button>
+          <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 space-y-4 my-10">
+            <h3 class="text-xl font-bold text-center">لوحة المعلم 🔒</h3>
+            <form onSubmit={e => { e.preventDefault(); if(tPass === 'andro11') { setView('t-dash'); setTErr(false); setTPass(''); } else setTErr(true); }} class="space-y-4">
+              <input type="password" value={tPass} onChange={e => setTPass(e.target.value)} placeholder="أدخل كود المرور السري" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-center text-white"/>
+              {tErr && <p class="text-red-400 text-xs text-center font-bold">كود المرور غير صحيح!</p>}
+              <button type="submit" class="w-full bg-emerald-600 py-3 rounded-xl text-xs font-bold">تأكيد الدخول</button>
             </form>
           </div>
         )}
 
         {view === 't-dash' && (
           <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-              <h3 class="font-bold text-white text-base">مرحباً بك يا أستاذ قزمان 🛠️</h3>
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+              <h3 class="font-bold text-white text-base">لوحة التحكم 🛠️</h3>
               <button onClick={() => setView('home')} class="bg-red-600 text-xs px-3 py-1.5 rounded-lg font-bold">خروج</button>
             </div>
-            <div class="space-y-4">
-              <h4 class="font-bold text-sm text-indigo-300">👥 توليد كود طالب جديد</h4>
-              <form onSubmit={e => { e.preventDefault(); if(!newName) return; const id = 'QZ-' + newGrade + 'SEC-' + Math.floor(1000 + Math.random()*9000); setStus([...stus, {id, name: newName, grade: newGrade}]); setNewName(''); alert('تم إنشاء الكود: ' + id); }} class="space-y-3">
+            <div class="grid grid-cols-3 gap-2">
+              <button onClick={() => setTTab('stus')} class={`p-2 rounded-xl text-xs font-bold ${tTab==='stus'?'bg-indigo-600 text-white':'bg-slate-950 text-slate-400'}`}>👥 الطلاب</button>
+              <button onClick={() => setTTab('less')} class={`p-2 rounded-xl text-xs font-bold ${tTab==='less'?'bg-indigo-600 text-white':'bg-slate-950 text-slate-400'}`}>📚 الدروس</button>
+              <button onClick={() => setTTab('quiz')} class={`p-2 rounded-xl text-xs font-bold ${tTab==='quiz'?'bg-indigo-600 text-white':'bg-slate-950 text-slate-400'}`}>📝 كويز</button>
+            </div>
+
+            {tTab === 'stus' && (
+              <form onSubmit={e => { e.preventDefault(); if(!newName) return; const id = 'QZ-'+newGrade+'SEC-'+Math.floor(1000+Math.random()*9000); setStus([...stus, {id, name: newName, grade: newGrade}]); setNewName(''); alert('تم إنشاء الكود: '+id); }} class="space-y-3">
                 <input type="text" value={newName} onChange={e => setNewName(e.target.value)} placeholder="اسم الطالب الثلاثي" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"/>
-                <select value={newGrade} onChange={e => setNewGrade(e.target.value)} class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white">
-                  <option value="1">الصف الأول الثانوي</option><option value="2">الصف الثاني الثانوي</option><option value="3">الصف الثالث الثانوي</option>
-                </select>
+                <select value={newGrade} onChange={e => setNewGrade(e.target.value)} class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"><option value="1">1 ثانوي</option><option value="2">2 ثانوي</option><option value="3">3 ثانوي</option></select>
                 <button type="submit" class="w-full bg-indigo-600 py-3 rounded-xl text-xs font-bold">إنشاء الكود</button>
               </form>
-              <div class="space-y-2 pt-2 max-h-40 overflow-y-auto">
-                {stus.map((s, i) => (
-                  <div key={i} class="flex justify-between items-center bg-slate-950 p-3 rounded-xl text-xs border border-slate-800">
-                    <span>{s.name} (الصف {s.grade})</span>
-                    <span class="font-mono text-indigo-400 font-bold">{s.id}</span>
+            )}
+
+            {tTab === 'less' && (
+              <form onSubmit={e => { e.preventDefault(); if(!lTitle) return; setLess([...less, {id: Date.now(), title: lTitle, grade: lGrade, videoUrl: lVideo, pdfUrl: lPdf||'#', desc: lDesc}]); setLTitle(''); setLVideo(''); setLPdf(''); setLDesc(''); alert('تم نشر الدرس!'); }} class="space-y-3">
+                <input type="text" value={lTitle} onChange={e => setLTitle(e.target.value)} placeholder="عنوان الدرس" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"/>
+                <select value={lGrade} onChange={e => setLGrade(e.target.value)} class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"><option value="1">1 ثانوي</option><option value="2">2 ثانوي</option><option value="3">3 ثانوي</option></select>
+                <input type="text" value={lVideo} onChange={e => setLVideo(e.target.value)} placeholder="رابط فيديو YouTube Embed" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"/>
+                <input type="text" value={lPdf} onChange={e => setLPdf(e.target.value)} placeholder="رابط ملزمة PDF" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"/>
+                <textarea value={lDesc} onChange={e => setLDesc(e.target.value)} placeholder="وصف الدرس..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-16"></textarea>
+                <button type="submit" class="w-full bg-violet-600 py-3 rounded-xl text-xs font-bold">نشر الدرس</button>
+              </form>
+            )}
+
+            {tTab === 'quiz' && (
+              <form onSubmit={e => { e.preventDefault(); if(!qTitle) return; setQuiz([...quiz, {id: Date.now(), title: qTitle, grade: qGrade, time: '15 دقيقة', qs}]); setQTitle(''); setQs([{q: '', opts: ['', '', '', ''], ans: 0, exp: ''}]); alert('تم نشر الكويز!'); }} class="space-y-3">
+                <input type="text" value={qTitle} onChange={e => setQTitle(e.target.value)} placeholder="عنوان الكويز" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"/>
+                <select value={qGrade} onChange={e => setQGrade(e.target.value)} class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"><option value="1">1 ثانوي</option><option value="2">2 ثانوي</option><option value="3">3 ثانوي</option></select>
+                {qs.map((item, idx) => (
+                  <div key={idx} class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2 text-xs">
+                    <input type="text" value={item.q} onChange={e => { const u = [...qs]; u[idx].q = e.target.value; setQs(u); }} placeholder="السؤال بالإنجليزية" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-xl text-white"/>
+                    <div class="grid grid-cols-2 gap-2">
+                      {item.opts.map((o, oIdx) => <input key={oIdx} type="text" value={o} onChange={e => { const u = [...qs]; u[idx].opts[oIdx] = e.target.value; setQs(u); }} placeholder={`خيار ${oIdx+1}`} class="p-2 bg-slate-900 border border-slate-800 rounded-xl text-white"/>)}
+                    </div>
+                    <select value={item.ans} onChange={e => { const u = [...qs]; u[idx].ans = parseInt(e.target.value); setQs(u); }} class="p-2 bg-slate-900 border border-slate-800 rounded-xl text-white"><option value={0}>الإجابة الصحيحة: خيار 1</option><option value={1}>خيار 2</option><option value={2}>خيار 3</option><option value={3}>خيار 4</option></select>
                   </div>
                 ))}
-              </div>
-            </div>
+                <button type="submit" class="w-full bg-emerald-600 py-3 rounded-xl text-xs font-bold">نشر الكويز</button>
+              </form>
+            )}
           </div>
         )}
 
         {view === 's-app' && (
           <div class="space-y-6">
-            <div class="flex border-b border-slate-800 space-x-3 space-x-reverse pb-2">
-              {['1', '2', '3'].map(g => (
-                <button key={g} onClick={() => setGrade(g)} class={`px-5 py-2.5 rounded-xl font-bold text-xs ${grade === g ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-900 text-slate-400 border border-slate-800'}`}>
-                  {g} ثانوي
-                </button>
-              ))}
+            <div class="flex border-b border-slate-800 space-x-2 space-x-reverse pb-2">
+              {['1', '2', '3'].map(g => <button key={g} onClick={() => setGrade(g)} class={`px-5 py-2.5 rounded-xl font-bold text-xs ${grade === g ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}`}>{g} ثانوي</button>)}
             </div>
 
             <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
-              <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-800 pb-2">
-                <span class="font-bold text-indigo-300">📁 المذكرات والفيديوهات للشرح</span>
-              </div>
+              <h4 class="font-bold text-indigo-300 text-xs">📁 المذكرات والفيديوهات</h4>
               {less.filter(l => l.grade === grade).map(l => (
-                <div key={l.id} class="space-y-2 pt-1">
-                  <h4 class="font-bold text-sm text-white">{l.title}</h4>
+                <div key={l.id} class="space-y-2 pt-2 border-b border-slate-800 pb-3">
+                  <h5 class="font-bold text-sm text-white">{l.title}</h5>
                   <p class="text-xs text-slate-400">{l.desc}</p>
-                  <a href={l.pdfUrl} target="_blank" class="inline-flex items-center space-x-1 space-x-reverse bg-indigo-600 text-white text-xs px-4 py-2 rounded-xl font-bold"><span>📥</span> <span>تحميل ملف PDF</span></a>
+                  {l.videoUrl && <iframe src={l.videoUrl} class="w-full aspect-video rounded-xl bg-black"></iframe>}
+                  {l.pdfUrl && l.pdfUrl !== '#' && <a href={l.pdfUrl} target="_blank" class="inline-block bg-indigo-600 text-white text-xs px-4 py-2 rounded-xl font-bold">📥 تحميل PDF</a>}
                 </div>
               ))}
             </div>
 
             <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
-              <div class="font-bold text-indigo-300 text-xs">📝 الكويزات التفاعلية</div>
+              <h4 class="font-bold text-indigo-300 text-xs">📝 الكويزات التفاعلية</h4>
               {quiz.filter(q => q.grade === grade).map(q => (
                 <div key={q.id} class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex justify-between items-center">
-                  <div>
-                    <h4 class="font-bold text-white text-sm">{q.title}</h4>
-                    <p class="text-[11px] text-slate-400 mt-0.5">أسئلة: {q.qs.length} | المدة: {q.time}</p>
-                  </div>
+                  <div><h5 class="font-bold text-white text-sm">{q.title}</h5><p class="text-[11px] text-slate-400">أسئلة: {q.qs.length}</p></div>
                   <button onClick={() => { setActQ(q); setAns({}); setSub(false); }} class="bg-emerald-600 text-white text-xs px-4 py-2 rounded-xl font-bold">بدء الكويز 🚀</button>
                 </div>
               ))}
@@ -182,21 +192,14 @@ function App() {
             {actQ && (
               <div class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
                 <div class="bg-slate-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl border border-slate-800 space-y-6">
-                  <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <h3 class="font-bold text-sm text-white">{actQ.title}</h3>
-                    <button onClick={() => setActQ(null)} class="text-slate-400 font-bold">✕</button>
-                  </div>
+                  <div class="flex justify-between items-center border-b border-slate-800 pb-3"><h3 class="font-bold text-sm text-white">{actQ.title}</h3><button onClick={() => setActQ(null)} class="text-slate-400 font-bold">✕</button></div>
                   {!sub ? (
                     <div class="space-y-6">
                       {actQ.qs.map((q, qIdx) => (
                         <div key={qIdx} class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-                          <p class="font-bold text-xs text-indigo-200">#{qIdx + 1} - {q.q}</p>
+                          <p class="font-bold text-xs text-indigo-200">#{qIdx+1} - {q.q}</p>
                           <div class="grid grid-cols-1 gap-2">
-                            {q.opts.map((opt, oIdx) => (
-                              <button key={oIdx} onClick={() => setAns({...ans, [qIdx]: oIdx})} class={`p-3 text-right rounded-xl text-xs border font-medium ${ans[qIdx] === oIdx ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-300'}`}>
-                                {opt}
-                              </button>
-                            ))}
+                            {q.opts.map((opt, oIdx) => <button key={oIdx} onClick={() => setAns({...ans, [qIdx]: oIdx})} class={`p-3 text-right rounded-xl text-xs border ${ans[qIdx] === oIdx ? 'bg-indigo-600 text-white' : 'bg-slate-900 border-slate-800 text-slate-300'}`}>{opt}</button>)}
                           </div>
                         </div>
                       ))}
@@ -205,10 +208,7 @@ function App() {
                   ) : (
                     <div class="space-y-6 text-center py-2">
                       <div class="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl font-bold">🏆</div>
-                      <div>
-                        <h4 class="text-lg font-bold text-white">تم تسليم الكويز بنجاح!</h4>
-                        <p class="text-xs text-slate-400 mt-1">النتيجة: <strong class="text-emerald-400">{score}</strong> من {actQ.qs.length}</p>
-                      </div>
+                      <h4 class="text-lg font-bold text-white">النتيجة: <span class="text-emerald-400">{score}</span> من {actQ.qs.length}</h4>
                       <div class="text-right space-y-3 pt-3 border-t border-slate-800">
                         {actQ.qs.map((q, idx) => {
                           const ok = ans[idx] === q.ans;
@@ -216,7 +216,6 @@ function App() {
                             <div key={idx} class={`p-3 rounded-xl border text-xs space-y-1 ${ok ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-red-950/20 border-red-500/30'}`}>
                               <p class="font-bold text-white">{idx+1}. {q.q}</p>
                               <p class="text-emerald-400">الإجابة الصحيحة: {q.opts[q.ans]}</p>
-                              {q.exp && <p class="text-slate-400 italic">💡 الشرح: {q.exp}</p>}
                             </div>
                           );
                         })}
@@ -230,10 +229,7 @@ function App() {
           </div>
         )}
       </main>
-
-      <footer class="border-t border-slate-800 bg-[#070a12] py-4 text-center text-xs text-slate-500">
-        جميع الحقوق محفوظة © Quzman in English 2026
-      </footer>
+      <footer class="border-t border-slate-800 bg-[#070a12] py-4 text-center text-xs text-slate-500">جميع الحقوق محفوظة © Quzman in English 2026</footer>
     </div>
   );
 }
