@@ -6,286 +6,369 @@
     <title>Emad Quzman in English</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Cairo Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- React & React DOM -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <!-- Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <!-- Font Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-      body { font-family: 'Cairo', sans-serif; }
+      * { font-family: 'Cairo', sans-serif; }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
   </head>
   <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div id="root"></div>
 
-    <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50">
-      <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-        <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onclick="showView('home')">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-black text-xl shadow-lg">
-            EQ
-          </div>
-          <div>
-            <h1 class="font-extrabold text-lg md:text-xl text-indigo-400">Emad Quzman in English</h1>
-            <p class="text-[10px] text-slate-400">المنصة التعليمية للغة الإنجليزية</p>
-          </div>
-        </div>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
 
-        <div>
-          <button onclick="showView('teacher-login')" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2 rounded-xl text-white font-bold transition">
-            دخول المعلم 🔐
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content Container -->
-    <main class="max-w-5xl mx-auto px-4 py-8">
-      
-      <!-- PAGE 1: HOME -->
-      <div id="view-home" class="py-10 text-center space-y-6">
-        <div class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
-          ✨ مرحباً بكم في المنصة الجديدة 2026
-        </div>
-        <h2 class="text-3xl md:text-5xl font-black text-white max-w-2xl mx-auto leading-tight">
-          منصة المستر <span class="text-indigo-400">عماد قزمان</span> لتعلم اللغة الإنجليزية
-        </h2>
-        <p class="text-slate-400 text-sm max-w-lg mx-auto">
-          دروس تفاعلية، شروحات فيديو، ملازم PDF، واختبارات تصحح تلقائياً لجميع المراحل الثانوية.
-        </p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-4">
-          <button onclick="showView('student-login')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-5 rounded-2xl font-bold shadow-xl transition flex flex-col items-center justify-center space-y-2">
-            <span class="text-3xl">👨‍🎓</span>
-            <span class="text-lg">دخول الطلاب</span>
-          </button>
-          <button onclick="showView('teacher-login')" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 p-5 rounded-2xl font-bold transition flex flex-col items-center justify-center space-y-2">
-            <span class="text-3xl">🔐</span>
-            <span class="text-lg">لوحة المعلم</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- PAGE 2: STUDENT LOGIN -->
-      <div id="view-student-login" class="hidden max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-2xl">
-        <h3 class="text-2xl font-bold text-white mb-2 text-center">دخول الطالب 👨‍🎓</h3>
-        <p class="text-slate-400 text-xs text-center mb-6">أدخل كود الطالب الخاص بك</p>
-        <div class="space-y-4">
-          <input type="text" id="studentCodeInput" placeholder="أدخل الكود (مثال: EQ-101)" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-center font-mono text-lg focus:outline-none focus:border-indigo-500" />
-          <p id="studentError" class="hidden text-red-400 text-xs text-center font-bold"></p>
-          <button onclick="loginStudent()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition">دخول المنصة</button>
-          <button onclick="showView('home')" class="w-full text-center text-xs text-slate-500 mt-2">العودة للرئيسية</button>
-        </div>
-      </div>
-
-      <!-- PAGE 3: TEACHER LOGIN -->
-      <div id="view-teacher-login" class="hidden max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-2xl">
-        <h3 class="text-2xl font-bold text-white mb-2 text-center">لوحة المعلم Mr. Emad 🔐</h3>
-        <p class="text-slate-400 text-xs text-center mb-6">كلمة المرور الخاصة بالمستر</p>
-        <div class="space-y-4">
-          <input type="password" id="teacherPassInput" placeholder="أدخل كلمة المرور" class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-center text-lg focus:outline-none focus:border-indigo-500" />
-          <p id="teacherError" class="hidden text-red-400 text-xs text-center font-bold"></p>
-          <button onclick="loginTeacher()" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl transition">دخول لوحة التحكم</button>
-          <button onclick="showView('home')" class="w-full text-center text-xs text-slate-500 mt-2">العودة للرئيسية</button>
-        </div>
-      </div>
-
-      <!-- PAGE 4: STUDENT DASHBOARD -->
-      <div id="view-student-app" class="hidden space-y-6">
-        <div class="flex justify-between items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
-          <div>
-            <span class="text-xs text-slate-400">مرحباً بك:</span>
-            <h4 id="studentNameDisplay" class="font-bold text-indigo-400 text-base">الطالب</h4>
-          </div>
-          <button onclick="showView('home')" class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg">خروج</button>
-        </div>
-
-        <!-- Grade Tabs -->
-        <div class="flex border-b border-slate-800 space-x-3 space-x-reverse">
-          <button onclick="setGrade('1')" id="tab-1" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white">الصف الأول الثانوي</button>
-          <button onclick="setGrade('2')" id="tab-2" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400">الصف الثاني الثانوي</button>
-          <button onclick="setGrade('3')" id="tab-3" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400">الصف الثالث الثانوي</button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="md:col-span-2 space-y-4" id="lessonsContainer">
-            <!-- Lessons Rendered Here -->
-          </div>
-          <div class="space-y-4" id="quizzesContainer">
-            <!-- Quizzes Rendered Here -->
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE 5: TEACHER DASHBOARD -->
-      <div id="view-teacher-dashboard" class="hidden space-y-8">
-        <div class="flex justify-between items-center bg-indigo-950 p-6 rounded-3xl border border-indigo-800/50">
-          <div>
-            <h3 class="text-2xl font-black text-white">لوحة تحكم المعلم (Emad Quzman) 🛠️</h3>
-            <p class="text-xs text-indigo-300">إدارة الطلاب والمحتوى والاختبارات</p>
-          </div>
-          <button onclick="showView('home')" class="bg-red-600 hover:bg-red-500 text-white text-xs px-4 py-2 rounded-xl font-bold">تسجيل خروج</button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Add Student -->
-          <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-4">
-            <h4 class="font-bold text-white text-base">➕ إنشاء حساب طالب جديد</h4>
-            <div class="space-y-3">
-              <input type="text" id="newStuName" placeholder="اسم الطالب رباعي" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <select id="newStuGrade" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white">
-                <option value="1">الصف الأول الثانوي</option>
-                <option value="2">الصف الثاني الثانوي</option>
-                <option value="3">الصف الثالث الثانوي</option>
-              </select>
-              <button onclick="addStudent()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs">توليد الكود والحفظ</button>
-            </div>
-            <div id="studentsList" class="pt-2 max-h-40 overflow-y-auto space-y-2"></div>
-          </div>
-
-          <!-- Add Lesson -->
-          <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-4">
-            <h4 class="font-bold text-white text-base">📚 إضافة درس وشروحات (PDF / Video)</h4>
-            <div class="space-y-3">
-              <input type="text" id="lessTitle" placeholder="عنوان الدرس" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <select id="lessGrade" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white">
-                <option value="1">الصف الأول الثانوي</option>
-                <option value="2">الصف الثاني الثانوي</option>
-                <option value="3">الصف الثالث الثانوي</option>
-              </select>
-              <input type="text" id="lessVideo" placeholder="رابط فيديو YouTube Embed" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <input type="text" id="lessPdf" placeholder="رابط ملف PDF" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <button onclick="addLesson()" class="w-full bg-violet-600 text-white font-bold py-3 rounded-xl text-xs">نشر الدرس</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </main>
-
-    <!-- JavaScript Logic -->
-    <script>
-      // Initial Data
-      let db = {
-        students: JSON.parse(localStorage.getItem('eq_students')) || [
+      const defaultData = {
+        students: [
           { id: 'EQ-101', name: 'أحمد محمود', grade: '1' },
           { id: 'EQ-202', name: 'سارة محمد', grade: '2' },
           { id: 'EQ-303', name: 'عمر خالد', grade: '3' }
         ],
-        lessons: JSON.parse(localStorage.getItem('eq_lessons')) || [
-          { id: 1, title: 'Unit 1: Grammar Review', grade: '1', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ', pdf: '#' },
-          { id: 2, title: 'Unit 1: Advanced Vocabulary', grade: '3', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ', pdf: '#' }
-        ]
+        lessons: [
+          {
+            id: 1,
+            title: 'Unit 1: Present Simple & Continuous',
+            grade: '1',
+            videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+            description: 'شرح مفصل لمادة القواعد للوحدة الأولى مع التمارين التطبيقية.'
+          }
+        ],
+        quizzes: [
+          {
+            id: 101,
+            title: 'اختبار القواعد - الوحدة الأولى',
+            grade: '1',
+            questions: [
+              {
+                question: 'She _____ to school every day on foot.',
+                options: ['go', 'goes', 'is going', 'went'],
+                correctAnswer: 1,
+                explanation: 'نستخدم مضارع بسيط مع الضمير She نضيف es للفعل.'
+              }
+            ]
+          }
+        ],
+        results: []
       };
 
-      let currentStudent = null;
-      let activeGrade = '1';
+      function App() {
+        const [view, setView] = useState('home');
+        const [passcode, setPasscode] = useState('');
+        const [error, setError] = useState('');
+        
+        const [students, setStudents] = useState(() => JSON.parse(localStorage.getItem('eq_stus')) || defaultData.students);
+        const [lessons, setLessons] = useState(() => JSON.parse(localStorage.getItem('eq_less')) || defaultData.lessons);
+        const [quizzes, setQuizzes] = useState(() => JSON.parse(localStorage.getItem('eq_quiz')) || defaultData.quizzes);
+        const [results, setResults] = useState(() => JSON.parse(localStorage.getItem('eq_res')) || defaultData.results);
 
-      function saveData() {
-        localStorage.setItem('eq_students', JSON.stringify(db.students));
-        localStorage.setItem('eq_lessons', JSON.stringify(db.lessons));
-      }
+        const [studentCode, setStudentCode] = useState('');
+        const [currentStudent, setCurrentStudent] = useState(null);
+        const [activeGrade, setActiveGrade] = useState('1');
 
-      function showView(viewId) {
-        ['home', 'student-login', 'teacher-login', 'student-app', 'teacher-dashboard'].forEach(v => {
-          document.getElementById('view-' + v).classList.add('hidden');
-        });
-        document.getElementById('view-' + viewId).classList.remove('hidden');
+        const [activeQuiz, setActiveQuiz] = useState(null);
+        const [userAnswers, setUserAnswers] = useState({});
+        const [quizScore, setQuizScore] = useState(null);
 
-        if (viewId === 'teacher-dashboard') renderStudentsList();
-      }
+        // Teacher Forms
+        const [newStuName, setNewStuName] = useState('');
+        const [newStuGrade, setNewStuGrade] = useState('1');
 
-      function loginTeacher() {
-        const pass = document.getElementById('teacherPassInput').value;
-        if (pass === 'quzman5656') {
-          showView('teacher-dashboard');
-          document.getElementById('teacherError').classList.add('hidden');
-        } else {
-          const err = document.getElementById('teacherError');
-          err.innerText = 'كلمة السر غير صحيحة!';
-          err.classList.remove('hidden');
-        }
-      }
+        const [lessTitle, setLessTitle] = useState('');
+        const [lessGrade, setLessGrade] = useState('1');
+        const [lessVideo, setLessVideo] = useState('');
+        const [lessPdf, setLessPdf] = useState('');
+        const [lessDesc, setLessDesc] = useState('');
 
-      function loginStudent() {
-        const code = document.getElementById('studentCodeInput').value.trim().toUpperCase();
-        const found = db.students.find(s => s.id.toUpperCase() === code);
-        if (found) {
-          currentStudent = found;
-          document.getElementById('studentNameDisplay').innerText = found.name;
-          setGrade(found.grade);
-          showView('student-app');
-          document.getElementById('studentError').classList.add('hidden');
-        } else {
-          const err = document.getElementById('studentError');
-          err.innerText = 'كود الطالب غير صحيح!';
-          err.classList.remove('hidden');
-        }
-      }
+        const [quizTitle, setQuizTitle] = useState('');
+        const [quizGrade, setQuizGrade] = useState('1');
+        const [quizQuestions, setQuizQuestions] = useState([
+          { question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }
+        ]);
 
-      function setGrade(gradeNum) {
-        activeGrade = gradeNum;
-        ['1', '2', '3'].forEach(g => {
-          const btn = document.getElementById('tab-' + g);
-          if (g === gradeNum) {
-            btn.className = 'px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white';
+        useEffect(() => localStorage.setItem('eq_stus', JSON.stringify(students)), [students]);
+        useEffect(() => localStorage.setItem('eq_less', JSON.stringify(lessons)), [lessons]);
+        useEffect(() => localStorage.setItem('eq_quiz', JSON.stringify(quizzes)), [quizzes]);
+        useEffect(() => localStorage.setItem('eq_res', JSON.stringify(results)), [results]);
+
+        const handleTeacherLogin = (e) => {
+          e.preventDefault();
+          if (passcode === 'quzman5656') {
+            setView('teacher-dashboard');
+            setError('');
           } else {
-            btn.className = 'px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400';
+            setError('كلمة المرور غير صحيحة!');
           }
-        });
+        };
 
-        renderStudentContent();
-      }
+        const handleStudentLogin = (e) => {
+          e.preventDefault();
+          const found = students.find(s => s.id.toUpperCase() === studentCode.trim().toUpperCase());
+          if (found) {
+            setCurrentStudent(found);
+            setActiveGrade(found.grade);
+            setView('student-app');
+            setError('');
+          } else {
+            setError('كود الطالب غير صحيح!');
+          }
+        };
 
-      function renderStudentContent() {
-        const lessonsBox = document.getElementById('lessonsContainer');
-        const list = db.lessons.filter(l => l.grade === activeGrade);
+        const handleAddStudent = (e) => {
+          e.preventDefault();
+          if (!newStuName) return;
+          const id = 'EQ-' + Math.floor(100 + Math.random() * 900);
+          setStudents([...students, { id, name: newStuName, grade: newStuGrade }]);
+          setNewStuName('');
+          alert(`تم إنشاء الحساب بنجاح!\nكود الطالب: ${id}`);
+        };
 
-        if (list.length === 0) {
-          lessonsBox.innerHTML = '<div class="bg-slate-900 p-8 rounded-2xl text-center text-slate-500 text-xs">لا توجد دروس حالياً لهذا الصف.</div>';
-          return;
-        }
+        const handleAddLesson = (e) => {
+          e.preventDefault();
+          if (!lessTitle) return;
+          setLessons([...lessons, {
+            id: Date.now(),
+            title: lessTitle,
+            grade: lessGrade,
+            videoUrl: lessVideo,
+            pdfUrl: lessPdf,
+            description: lessDesc
+          }]);
+          setLessTitle(''); setLessVideo(''); setLessPdf(''); setLessDesc('');
+          alert('تم نشر الدرس بنجاح!');
+        };
 
-        lessonsBox.innerHTML = list.map(l => `
-          <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
-            <h5 class="font-bold text-indigo-300 text-sm">${l.title}</h5>
-            ${l.video ? `<iframe src="${l.video}" class="w-full aspect-video rounded-xl bg-black"></iframe>` : ''}
-            ${l.pdf && l.pdf !== '#' ? `<a href="${l.pdf}" target="_blank" class="inline-block text-xs text-indigo-400 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20">📄 تحميل ملزمة الدرس (PDF)</a>` : ''}
-          </div>
-        `).join('');
-      }
+        const handleSaveQuiz = (e) => {
+          e.preventDefault();
+          if (!quizTitle) return;
+          setQuizzes([...quizzes, {
+            id: Date.now(),
+            title: quizTitle,
+            grade: quizGrade,
+            questions: quizQuestions
+          }]);
+          setQuizTitle('');
+          setQuizQuestions([{ question: '', options: ['', '', '', ''], correctAnswer: 0, explanation: '' }]);
+          alert('تم نشر الكويز بنجاح!');
+        };
 
-      function addStudent() {
-        const name = document.getElementById('newStuName').value;
-        const grade = document.getElementById('newStuGrade').value;
-        if (!name) return;
+        const submitQuiz = () => {
+          let score = 0;
+          activeQuiz.questions.forEach((q, idx) => {
+            if (userAnswers[idx] === q.correctAnswer) score++;
+          });
+          setQuizScore(score);
+          setResults([{
+            studentName: currentStudent.name,
+            studentCode: currentStudent.id,
+            quizTitle: activeQuiz.title,
+            score,
+            total: activeQuiz.questions.length,
+            date: new Date().toLocaleDateString('ar-EG')
+          }, ...results]);
+        };
 
-        const id = 'EQ-' + Math.floor(100 + Math.random() * 900);
-        db.students.push({ id, name, grade });
-        saveData();
-        renderStudentsList();
-        document.getElementById('newStuName').value = '';
-        alert('تم إنشاء الحساب بنجاح!\nكود الطالب هو: ' + id);
-      }
+        return (
+          <div class="min-h-screen flex flex-col justify-between">
+            {/* Header */}
+            <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+              <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => setView('home')}>
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/20">
+                    EQ
+                  </div>
+                  <div>
+                    <h1 class="font-black text-lg md:text-xl text-indigo-400">Emad Quzman in English</h1>
+                    <p class="text-[10px] text-slate-400 font-semibold">منصة اللغة الإنجليزية التعليمية</p>
+                  </div>
+                </div>
 
-      function renderStudentsList() {
-        const box = document.getElementById('studentsList');
-        box.innerHTML = db.students.map(s => `
-          <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl text-xs">
-            <span>${s.name} (صف ${s.grade})</span>
-            <span class="font-mono bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded font-bold">${s.id}</span>
-          </div>
-        `).join('');
-      }
+                <div class="flex items-center space-x-2 space-x-reverse">
+                  {view === 'student-app' && (
+                    <span class="text-xs bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-lg border border-indigo-500/20">
+                      👨‍🎓 الطالب: <strong class="text-white">{currentStudent?.name}</strong>
+                    </span>
+                  )}
+                  <button 
+                    onClick={() => setView(view === 'home' ? 'teacher-login' : 'home')}
+                    class="bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2 rounded-xl text-white font-bold transition shadow-lg shadow-indigo-600/20"
+                  >
+                    {view === 'teacher-dashboard' || view === 'student-app' ? 'خروج' : 'دخول المعلم 🔐'}
+                  </button>
+                </div>
+              </div>
+            </header>
 
-      function addLesson() {
-        const title = document.getElementById('lessTitle').value;
-        const grade = document.getElementById('lessGrade').value;
-        const video = document.getElementById('lessVideo').value;
-        const pdf = document.getElementById('lessPdf').value;
+            {/* Main Content */}
+            <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-grow">
+              
+              {/* HOME */}
+              {view === 'home' && (
+                <div class="py-12 text-center space-y-6">
+                  <div class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
+                    ✨ أهلاً بكم في منصة التميز 2026
+                  </div>
+                  <h2 class="text-4xl md:text-6xl font-black text-white max-w-3xl mx-auto leading-tight">
+                    طريقك للدرجة النهائية مع المستر <span class="text-indigo-400">عماد قزمان</span>
+                  </h2>
+                  <p class="text-slate-400 text-sm max-w-lg mx-auto">
+                    دروس تفاعلية، شروحات فيديو، ملازم PDF، واختبارات تفاعلية تصحح تلقائياً.
+                  </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-4">
+                    <button onClick={() => { setError(''); setView('student-login'); }} class="bg-indigo-600 hover:bg-indigo-500 text-white p-5 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-600/20 transition flex flex-col items-center justify-center space-y-2">
+                      <span class="text-3xl">👨‍🎓</span>
+                      <span>دخول الطلاب</span>
+                    </button>
+                    <button onClick={() => { setError(''); setView('teacher-login'); }} class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 p-5 rounded-2xl font-bold text-lg transition flex flex-col items-center justify-center space-y-2">
+                      <span class="text-3xl">🔐</span>
+                      <span>لوحة المعلم</span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
-        if (!title) return;
-        db.lessons.push({ id: Date.now(), title, grade, video, pdf });
-        saveData();
-        document.getElementById('lessTitle').value = '';
-        alert('تم نشر الدرس بنجاح!');
-      }
-    </script>
-  </body>
-</html>
+              {/* STUDENT LOGIN */}
+              {view === 'student-login' && (
+                <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-2xl">
+                  <h3 class="text-2xl font-bold text-white mb-2 text-center">دخول منصة الطلاب 👨‍🎓</h3>
+                  <p class="text-slate-400 text-xs text-center mb-6">أدخل كود الطالب الخاص بك</p>
+                  <form onSubmit={handleStudentLogin} class="space-y-4">
+                    <input 
+                      type="text" 
+                      value={studentCode}
+                      onChange={(e) => setStudentCode(e.target.value)}
+                      placeholder="مثال: EQ-101" 
+                      class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-center font-mono text-lg focus:outline-none focus:border-indigo-500" 
+                    />
+                    {error && <p class="text-red-400 text-xs text-center font-bold">{error}</p>}
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition">دخول المنصة</button>
+                  </form>
+                </div>
+              )}
+
+              {/* TEACHER LOGIN */}
+              {view === 'teacher-login' && (
+                <div class="max-w-md mx-auto bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-2xl">
+                  <h3 class="text-2xl font-bold text-white mb-2 text-center">لوحة المعلم Mr. Emad 🔐</h3>
+                  <p class="text-slate-400 text-xs text-center mb-6">أدخل كلمة المرور الخاصة بك</p>
+                  <form onSubmit={handleTeacherLogin} class="space-y-4">
+                    <input 
+                      type="password" 
+                      value={passcode}
+                      onChange={(e) => setPasscode(e.target.value)}
+                      placeholder="أدخل كلمة المرور" 
+                      class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-center text-lg focus:outline-none focus:border-indigo-500" 
+                    />
+                    {error && <p class="text-red-400 text-xs text-center font-bold">{error}</p>}
+                    <button type="submit" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl transition">دخول لوحة التحكم</button>
+                  </form>
+                </div>
+              )}
+
+              {/* STUDENT DASHBOARD */}
+              {view === 'student-app' && (
+                <div class="space-y-6">
+                  {/* Grade Tabs */}
+                  <div class="flex border-b border-slate-800 space-x-3 space-x-reverse overflow-x-auto pb-2">
+                    {['1', '2', '3'].map(g => (
+                      <button 
+                        key={g} 
+                        onClick={() => setActiveGrade(g)}
+                        class={`px-6 py-3 rounded-xl font-bold text-xs transition ${activeGrade === g ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-900 text-slate-400'}`}
+                      >
+                        الصف {g === '1' ? 'الأول' : g === '2' ? 'الثاني' : 'الثالث'} الثانوي
+                      </button>
+                    ))}
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Lessons */}
+                    <div class="md:col-span-2 space-y-4">
+                      <h4 class="font-bold text-lg text-white">🎬 الدروس والشروحات</h4>
+                      {lessons.filter(l => l.grade === activeGrade).length === 0 ? (
+                        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center text-slate-500 text-xs">لا توجد دروس حالياً لهذا الصف.</div>
+                      ) : (
+                        lessons.filter(l => l.grade === activeGrade).map(l => (
+                          <div key={l.id} class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
+                            <h5 class="font-bold text-indigo-300 text-base">{l.title}</h5>
+                            <p class="text-xs text-slate-400">{l.description}</p>
+                            {l.videoUrl && (
+                              <div class="aspect-video w-full rounded-xl overflow-hidden bg-black">
+                                <iframe src={l.videoUrl} class="w-full h-full" allowfullscreen></iframe>
+                              </div>
+                            )}
+                            {l.pdfUrl && l.pdfUrl !== '#' && (
+                              <a href={l.pdfUrl} target="_blank" class="inline-block text-xs bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-lg">📄 تحميل ملزمة الدرس (PDF)</a>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Quizzes */}
+                    <div class="space-y-4">
+                      <h4 class="font-bold text-lg text-white">📝 الاختبارات والتطبيقات</h4>
+                      {quizzes.filter(q => q.grade === activeGrade).length === 0 ? (
+                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-center text-slate-500 text-xs">لا توجد كويزات متاحة.</div>
+                      ) : (
+                        quizzes.filter(q => q.grade === activeGrade).map(q => (
+                          <div key={q.id} class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
+                            <h5 class="font-bold text-white text-sm">{q.title}</h5>
+                            <p class="text-xs text-slate-400">عدد الأسئلة: {q.questions.length}</p>
+                            <button onClick={() => { setActiveQuiz(q); setUserAnswers({}); setQuizScore(null); }} class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-2 rounded-xl text-xs transition">بدء الاختبار 🚀</button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quiz Modal */}
+                  {activeQuiz && (
+                    <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                      <div class="bg-slate-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl border border-slate-800 space-y-6">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                          <h3 class="font-bold text-lg text-white">{activeQuiz.title}</h3>
+                          <button onClick={() => setActiveQuiz(null)} class="text-slate-400 font-bold text-lg">✕</button>
+                        </div>
+
+                        {quizScore === null ? (
+                          <div class="space-y-6">
+                            {activeQuiz.questions.map((q, idx) => (
+                              <div key={idx} class="space-y-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                                <p class="font-bold text-sm text-indigo-200">{idx + 1}. {q.question}</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {q.options.map((opt, oIdx) => (
+                                    <button 
+                                      key={oIdx}
+                                      onClick={() => setUserAnswers({...userAnswers, [idx]: oIdx})}
+                                      class={`p-3 text-right rounded-xl text-xs border font-medium ${userAnswers[idx] === oIdx ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900 border-slate-800 text-slate-300'}`}
+                                    >
+                                      {opt}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                            <button onClick={submitQuiz} class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm transition">إنهاء وتسليم الكويز</button>
+                          </div>
+                        ) : (
+                          <div class="text-center space-y-6 py-4">
+                            <div class="text-5xl">🏆</div>
+                            <h4 class="text-2xl font-black text-white">النتيجة: <span class="text-emerald-400">{quizScore}</span> / {activeQuiz.questions.length}</h4>
+                            <div class="text-right space-y-3 pt-4 border-t border-slate-800">
+                              <h5 class="font-bold text-xs text-slate-300">الإجابات الصحيحة:</h5>
+                              {activeQuiz.questions.map((q, idx) => (
+                                <div key={idx} class="bg-slate-950 p-3 rounded-xl text-xs space-y-1">
+                                  <p class="font-bold text-slate-200">{idx + 1}. {q.question}</p>
+                                  <p class="text-emerald-400">الإجابة: {q.options[q.correctAnswer]}</p>
+                                  {q.explanation && <p class="text-slate-400 italic">التوضيح: {q.explanation}</p>}
+                                </div>
+                              ))}
+                           
